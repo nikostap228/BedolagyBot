@@ -6,11 +6,14 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram import F
 import commands
 
+# Загружаем переменные окружения
+load_dotenv()
 
+# Миграция базы данных
 commands.migrate_db()
 
+# Создаем маршрутизатор
 router = Router()
-load_dotenv()
 
 # Главное меню
 main_kb = ReplyKeyboardMarkup(
@@ -30,6 +33,7 @@ start_kb = ReplyKeyboardMarkup(
 )
 
 
+# Обработчики команд и кнопок
 @router.message(F.text == "/start")
 async def start_cmd(message: Message):
     await message.answer("Алло бедолага, выбери действие:", reply_markup=main_kb)
@@ -59,10 +63,13 @@ async def leaderboard_cmd(message: Message):
     await message.answer(response, parse_mode="Markdown")
 
 
+# Функция запуска бота
 async def main():
-    bot = Bot(token=os.getenv("BOT_TOKEN"))
+    bot = Bot(token=os.getenv("BOT_TOKEN"), parse_mode="HTML")
     dp = Dispatcher()
     dp.include_router(router)
+    print("Бот запущен и работает через polling!")
+    # Запуск long polling без портов
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
